@@ -352,6 +352,12 @@ class TestCaseMubuCreatDoc(HttpRunner):
                 }
             )
             .with_json({"folderId": "0", "type": 0})
+            
+            # 提取接口的返回 > 参数关联的第一步是提取参数，extract方法在请求之后提取，一般紧挨着body。
+            .extract()
+            # 提取body体id值,传入变量docId， body中按层级提取，字典按.提取，列表按[]索引提取，具体看官网。
+            .with_jmespath("body.data.id", "docId")
+
             .validate()
             .assert_equal("status_code", 200)
             .assert_equal('headers."Content-Type"', "application/json;charset=UTF-8")
@@ -411,7 +417,7 @@ class TestCaseMubuCreatDoc(HttpRunner):
                     "Accept-Language": "zh-CN,zh;q=0.9",
                 }
             )
-            .with_json({"document_id": "6zCNcsrItW_"})
+            .with_json({"document_id": "${docId}"})
             .validate()
             .assert_equal("status_code", 200)
             .assert_equal('headers."Content-Type"', "application/json;charset=UTF-8")
@@ -441,7 +447,7 @@ class TestCaseMubuCreatDoc(HttpRunner):
                     "Accept-Language": "zh-CN,zh;q=0.9",
                 }
             )
-            .with_json({"docId": "6zCNcsrItW_", "password": ""})
+            .with_json({"docId": "${docId}", "password": ""})
             .validate()
             .assert_equal("status_code", 200)
             .assert_equal('headers."Content-Type"', "application/json;charset=UTF-8")
@@ -470,7 +476,7 @@ class TestCaseMubuCreatDoc(HttpRunner):
                     "Accept-Language": "zh-CN,zh;q=0.9",
                 }
             )
-            .with_json({"targetDocId": "6zCNcsrItW_"})
+            .with_json({"targetDocId": "${docId}"})
             .validate()
             .assert_equal("status_code", 200)
             .assert_equal('headers."Content-Type"', "application/json;charset=UTF-8")
@@ -526,7 +532,7 @@ class TestCaseMubuCreatDoc(HttpRunner):
                     "Accept-Language": "zh-CN,zh;q=0.9",
                 }
             )
-            .with_json({"targetDocId": "6zCNcsrItW_"})
+            .with_json({"targetDocId": "${docId}"})
             .validate()
             .assert_equal("status_code", 200)
             .assert_equal('headers."Content-Type"', "application/json;charset=UTF-8")
@@ -536,7 +542,7 @@ class TestCaseMubuCreatDoc(HttpRunner):
             RunRequest("/v3/api/colla/members")
             .options("https://api2.mubu.com/v3/api/colla/members")
             .with_params(
-                **{"memberId": "5242742441223623", "documentId": "6zCNcsrItW_"}
+                **{"memberId": "5242742441223623", "documentId": "${docId}"}
             )
             .with_headers(
                 **{
@@ -563,7 +569,7 @@ class TestCaseMubuCreatDoc(HttpRunner):
             RunRequest("/v3/api/colla/members")
             .get("https://api2.mubu.com/v3/api/colla/members")
             .with_params(
-                **{"memberId": "5242742441223623", "documentId": "6zCNcsrItW_"}
+                **{"memberId": "5242742441223623", "documentId": "${docId}"}
             )
             .with_headers(
                 **{
@@ -621,11 +627,11 @@ class TestCaseMubuCreatDoc(HttpRunner):
                     "messageType": "BROADCAST",
                     "reqId": 3,
                     "requestId": "MESSAGE:11623951:5242742441223623:3",
-                    "token": "6zCNcsrItW_",
+                    "token": "${docId}",
                     "data": {
                         "message": {
                             "type": "CHANGE",
-                            "documentId": "6zCNcsrItW_",
+                            "documentId": "${docId}",
                             "version": 0,
                             "content": [
                                 {"name": "nameChanged", "title": "d", "original": ""},
@@ -679,7 +685,7 @@ class TestCaseMubuCreatDoc(HttpRunner):
                     "Accept-Language": "zh-CN,zh;q=0.9",
                 }
             )
-            .with_json({"docId": "6zCNcsrItW_", "keywords": "demo", "option": 1})
+            .with_json({"docId": "${docId}", "keywords": "demo", "option": 1})
             .validate()
             .assert_equal("status_code", 200)
             .assert_equal('headers."Content-Type"', "application/json;charset=UTF-8")
@@ -717,11 +723,11 @@ class TestCaseMubuCreatDoc(HttpRunner):
                     "messageType": "BROADCAST",
                     "reqId": 5,
                     "requestId": "MESSAGE:11623951:5242742441223623:5",
-                    "token": "6zCNcsrItW_",
+                    "token": "${docId}",
                     "data": {
                         "message": {
                             "type": "CHANGE",
-                            "documentId": "6zCNcsrItW_",
+                            "documentId": "${docId}",
                             "version": 1,
                             "content": [
                                 {
@@ -806,11 +812,11 @@ class TestCaseMubuCreatDoc(HttpRunner):
                     "messageType": "BROADCAST",
                     "reqId": 7,
                     "requestId": "MESSAGE:11623951:5242742441223623:7",
-                    "token": "6zCNcsrItW_",
+                    "token": "${docId}",
                     "data": {
                         "message": {
                             "type": "CHANGE",
-                            "documentId": "6zCNcsrItW_",
+                            "documentId": "${docId}",
                             "version": 2,
                             "content": [
                                 {
