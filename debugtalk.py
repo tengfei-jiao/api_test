@@ -1,31 +1,14 @@
-import time
-import os
-
-# 这里是根目录的标记
-
-from httprunner import __version__
+from libs.model_001 import *
+from libs.model_002 import *
 
 
-def get_httprunner_version():
-    return __version__
+# 配置环境的sesion,token
+huanjing = [1, 2, 3]
+def gen_session():
+    if huanjing == 1:
+        return "token1"
+    elif huanjing ==2:
+        return "token2"
+    elif huanjing == 3:
+        return "token3"
 
-
-def sum_two(m, n):
-    return m + n
-
-
-def sleep(n_secs):
-    time.sleep(n_secs)
-
-
-def get_encrypt_password():
-    raw_passwd = os.environ["Password"]
-    PROJECT_KEY = os.environ["PROJECT_KEY"]
-    password = (raw_passwd + PROJECT_KEY).encode('ascii')
-    return 2
-
-def get_account(num):
-    accounts = []
-    for index in range(1, num+1):
-        accounts.append({"username": "user%s" % index, "password": str(index) * 6},)
-    return accounts

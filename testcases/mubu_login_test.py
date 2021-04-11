@@ -7,29 +7,35 @@ from httprunner import HttpRunner, Config, Step, RunRequest, RunTestCase
 
 class TestCaseMubuLogin(HttpRunner):
 
-    config = Config("testcase description").verify(False)
+    config = (
+        Config("login mubu")
+        .variables(phone="${ENV(username)}", password="${ENV(password)}", host="${ENV(host)}")
+        .verify(False)
+        .base_url("https://${host}")
+        .export(*["unreadCount"])
+    )
 
     teststeps = [
         Step(
             RunRequest("/api/login/submit")
-            .post("https://mubu.com/api/login/submit")
+            .post("/api/login/submit")
             .with_headers(
                 **{
-                    "Host": "mubu.com",
+                    "Host": "${host}",
                     "Connection": "keep-alive",
                     "Content-Length": "47",
                     "Accept": "application/json, text/javascript, */*; q=0.01",
                     "X-Requested-With": "XMLHttpRequest",
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36",
                     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                    "Origin": "https://mubu.com",
+                    "Origin": "https://${host}",
                     "Sec-Fetch-Site": "same-origin",
                     "Sec-Fetch-Mode": "cors",
                     "Sec-Fetch-Dest": "empty",
-                    "Referer": "https://mubu.com/login/password",
+                    "Referer": "https://${host}/login/password",
                     "Accept-Encoding": "gzip, deflate, br",
                     "Accept-Language": "zh-CN,zh;q=0.9",
-                    "Cookie": "data_unique_id=5af8ec14-0e06-45fb-948e-5852d15f593a; _ga=GA1.2.575825054.1617539185; _gid=GA1.2.961331060.1617973416; reg_entrance=https%3A%2F%2Fmubu.com%2F; language=en-US; country=US; Hm_lvt_4426cbb0486a79ea049b4ad52d81b504=1617805446,1617820067,1617981171,1618017226; csrf_token=2ebd2cd9-e587-47d4-b8e3-6bb81d9fe9ce; SESSION=30786ff7-4a20-4a5c-b5aa-9d56f3586db4; _gat=1; reg_prepareId=178b9ae33da-178b9ae33d3-4763-bcdf-9510a0eb4440; reg_focusId=5247c4c4-c1ff-4763-bcdf-178b9ae36b3; SLARDAR_WEB_ID=8d09bf6a-a457-4c0e-a070-fd54f2c2279f; Hm_lpvt_4426cbb0486a79ea049b4ad52d81b504=1618022906",
+                    "Cookie": "data_unique_id=5af8ec14-0e06-45fb-948e-5852d15f593a; _ga=GA1.2.575825054.1617539185; _gid=GA1.2.961331060.1617973416; reg_entrance=https%3A%2F%2F${host}%2F; language=en-US; country=US; Hm_lvt_4426cbb0486a79ea049b4ad52d81b504=1617805446,1617820067,1617981171,1618017226; csrf_token=2ebd2cd9-e587-47d4-b8e3-6bb81d9fe9ce; SESSION=30786ff7-4a20-4a5c-b5aa-9d56f3586db4; _gat=1; reg_prepareId=178b9ae33da-178b9ae33d3-4763-bcdf-9510a0eb4440; reg_focusId=5247c4c4-c1ff-4763-bcdf-178b9ae36b3; SLARDAR_WEB_ID=8d09bf6a-a457-4c0e-a070-fd54f2c2279f; Hm_lpvt_4426cbb0486a79ea049b4ad52d81b504=1618022906",
                 }
             )
             .with_cookies(
@@ -37,7 +43,7 @@ class TestCaseMubuLogin(HttpRunner):
                     "data_unique_id": "5af8ec14-0e06-45fb-948e-5852d15f593a",
                     "_ga": "GA1.2.575825054.1617539185",
                     "_gid": "GA1.2.961331060.1617973416",
-                    "reg_entrance": "https%3A%2F%2Fmubu.com%2F",
+                    "reg_entrance": "https%3A%2F%2F${host}%2F",
                     "language": "en-US",
                     "country": "US",
                     "Hm_lvt_4426cbb0486a79ea049b4ad52d81b504": "1617805446,1617820067,1617981171,1618017226",
@@ -51,8 +57,11 @@ class TestCaseMubuLogin(HttpRunner):
                 }
             )
             .with_data(
-                {"phone": "18710748230", "password": "123456", "remember": "true"}
+                {"phone": "${phone}", "password": "${password}", "remember": "true"}
             )
+            # 提取返回的参数,将某值传递给变量unreadCount
+            .extract()
+            .with_jmespath("body.code", "unreadCount")
             .validate()
             .assert_equal("status_code", 200)
             .assert_equal('headers."Content-Type"', "application/json;charset=UTF-8")
