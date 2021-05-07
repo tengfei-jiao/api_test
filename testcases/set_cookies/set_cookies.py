@@ -4,6 +4,23 @@
 
 from httprunner import HttpRunner, Config, Step, RunRequest, RunTestCase
 
+"""
+登录调测：
+（1）录制脚本，会有gettoken的接口，如果不将token的值到下面的信息头，无法持续自动化
+（2）进入模块后，cookies里面有3个变量是从登录传递下来的，从登录中提取JESSIONID，
+.with_jmespath("data.headers.TGC","TGC")
+.with_jmespath("data.cookies.genex-session","genex-session")
+.with_jmespath("data.cookies.fusiongis-session","fusiongis-session")
+（3）解决了重定向的接口返回200的问题：因为requests库自动处理了重定向请求1，请求2，直到返回200，所以需要设置禁止重定向
+allow_redirects=False，然后返回的接口就是302了，可以提取这里面的cookies
+（4）注释掉断言，断言是302，然后报错判断失败的问题解决。
+（4）所有重定向的接口，返回的data.headers.location值需要传递到下个接口的url
+（5）替换base_url
+（6）设置全局变量，url、user、password
+（7）切换测试环境后，报错，登录的某个入参需要从get/login中获取，它的返回时html
+"""
+
+
 
 class TestCaseMubuLogin(HttpRunner):
 
